@@ -1,8 +1,14 @@
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { CheckCircle, ExternalLink, AlertCircle } from 'lucide-react'
+import { CheckCircle2, ExternalLink, AlertCircle, CreditCard, Zap, Shield, Clock } from 'lucide-react'
 import toast from 'react-hot-toast'
 import api from '../../lib/axios'
-import { Button } from '../../components/ui/Button'
+
+const HOW_IT_WORKS = [
+  { icon: CreditCard, title: 'Buyer pays',          desc: 'Customers pay securely via Stripe Checkout' },
+  { icon: Zap,        title: '95% to you',          desc: 'NearCart takes a 5% platform fee only' },
+  { icon: Clock,      title: 'Fast payouts',         desc: 'Funds transferred every 2 business days' },
+  { icon: Shield,     title: 'Secure & protected',   desc: 'Stripe handles all payment security' },
+]
 
 export default function PayoutSetup() {
   const { data: status, isLoading, refetch } = useQuery({
@@ -12,77 +18,119 @@ export default function PayoutSetup() {
 
   const onboard = useMutation({
     mutationFn: () => api.post('/payments/connect/onboard'),
-    onSuccess: (res) => { window.open(res.data.onboardingUrl, '_blank') },
-    onError:   (e)   => toast.error(e.response?.data?.error || 'Failed to start onboarding'),
+    onSuccess:  (res) => { window.open(res.data.onboardingUrl, '_blank') },
+    onError:    (e)   => toast.error(e.response?.data?.error || 'Failed to start onboarding'),
   })
 
   if (isLoading) return (
-    <div className="p-8 animate-pulse"><div className="h-64 bg-gray-200 rounded-xl" /></div>
+    <div className="max-w-2xl animate-pulse space-y-3">
+      <div className="h-32 bg-gray-100 rounded-2xl" />
+      <div className="h-48 bg-gray-100 rounded-2xl" />
+    </div>
   )
 
   return (
-    <div className="p-8 max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Payout Setup</h1>
-        <p className="text-gray-500 mt-1">Connect your bank account to receive payments</p>
-      </div>
+    <div className="max-w-2xl space-y-5">
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
-        {status?.connected ? (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <CheckCircle size={24} className="text-green-500" />
-              <div>
-                <p className="font-semibold text-gray-900">Stripe Connect Active</p>
-                <p className="text-sm text-gray-500">Your store is ready to receive payments</p>
-              </div>
+      {/* Status card */}
+      {status?.connected ? (
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 bg-primary-50 rounded-2xl flex items-center justify-center shrink-0">
+              <CheckCircle2 size={22} className="text-primary-600" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className={`p-4 rounded-lg border ${status.chargesEnabled ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                <p className="text-sm font-medium">{status.chargesEnabled ? '✅' : '❌'} Charges</p>
-                <p className="text-xs text-gray-500 mt-1">{status.chargesEnabled ? 'Enabled' : 'Disabled'}</p>
-              </div>
-              <div className={`p-4 rounded-lg border ${status.payoutsEnabled ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                <p className="text-sm font-medium">{status.payoutsEnabled ? '✅' : '❌'} Payouts</p>
-                <p className="text-xs text-gray-500 mt-1">{status.payoutsEnabled ? 'Enabled' : 'Disabled'}</p>
-              </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">Stripe Connect Active</h3>
+              <p className="text-sm text-gray-500 mt-0.5">Your store is ready to receive payments from buyers</p>
             </div>
-            {!status.detailsSubmitted && (
-              <div className="flex items-start gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <AlertCircle size={18} className="text-yellow-600 mt-0.5 shrink-0" />
-                <p className="text-sm text-yellow-800">Complete your Stripe onboarding to enable payouts</p>
-              </div>
-            )}
-            <Button variant="secondary" onClick={() => onboard.mutate()} loading={onboard.isPending} className="gap-2">
-              <ExternalLink size={16} /> Update Stripe Account
-            </Button>
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <AlertCircle size={24} className="text-orange-500" />
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className={`p-4 rounded-xl border ${status.chargesEnabled ? 'bg-primary-50 border-primary-100' : 'bg-red-50 border-red-100'}`}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`text-sm ${status.chargesEnabled ? 'text-primary-600' : 'text-red-500'}`}>
+                  {status.chargesEnabled ? '✓' : '✗'} Charges
+                </span>
+              </div>
+              <p className="text-xs text-gray-500">{status.chargesEnabled ? 'Enabled and ready' : 'Not yet enabled'}</p>
+            </div>
+            <div className={`p-4 rounded-xl border ${status.payoutsEnabled ? 'bg-primary-50 border-primary-100' : 'bg-red-50 border-red-100'}`}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`text-sm ${status.payoutsEnabled ? 'text-primary-600' : 'text-red-500'}`}>
+                  {status.payoutsEnabled ? '✓' : '✗'} Payouts
+                </span>
+              </div>
+              <p className="text-xs text-gray-500">{status.payoutsEnabled ? 'Enabled and ready' : 'Not yet enabled'}</p>
+            </div>
+          </div>
+
+          {!status.detailsSubmitted && (
+            <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-100 rounded-xl">
+              <AlertCircle size={16} className="text-amber-600 mt-0.5 shrink-0" />
+              <p className="text-sm text-amber-800">
+                Complete your Stripe onboarding to enable payouts. Click the button below to finish setup.
+              </p>
+            </div>
+          )}
+
+          <button
+            onClick={() => onboard.mutate()}
+            disabled={onboard.isPending}
+            className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 border border-gray-200 hover:border-gray-300 px-4 py-2.5 rounded-xl transition"
+          >
+            {onboard.isPending
+              ? <span className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+              : <ExternalLink size={15} />
+            }
+            Update Stripe Account
+          </button>
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 bg-orange-50 rounded-2xl flex items-center justify-center shrink-0">
+              <AlertCircle size={22} className="text-orange-500" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">Stripe Not Connected</h3>
+              <p className="text-sm text-gray-500 mt-0.5">Connect your Stripe account to start receiving payments</p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onboard.mutate()}
+            disabled={onboard.isPending}
+            className="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl text-sm transition"
+          >
+            {onboard.isPending
+              ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              : <ExternalLink size={16} />
+            }
+            Connect with Stripe
+          </button>
+
+          <p className="text-center text-xs text-gray-400">
+            Test mode only — use card <span className="font-mono bg-gray-100 px-1 py-0.5 rounded">4242 4242 4242 4242</span>
+          </p>
+        </div>
+      )}
+
+      {/* How it works */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">How Payouts Work</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {HOW_IT_WORKS.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+              <div className="w-7 h-7 bg-primary-50 rounded-lg flex items-center justify-center shrink-0">
+                <Icon size={14} className="text-primary-600" />
+              </div>
               <div>
-                <p className="font-semibold text-gray-900">Stripe Not Connected</p>
-                <p className="text-sm text-gray-500">Connect Stripe to receive payments from orders</p>
+                <p className="text-xs font-semibold text-gray-800">{title}</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{desc}</p>
               </div>
             </div>
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
-              <p className="text-sm font-medium text-blue-900">How it works:</p>
-              <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-                <li>Buyers pay via Stripe Checkout</li>
-                <li>NearCart takes a 5% platform fee</li>
-                <li>Remaining 95% goes directly to your bank</li>
-                <li>Payouts every 2 business days</li>
-              </ul>
-            </div>
-            <Button onClick={() => onboard.mutate()} loading={onboard.isPending} className="gap-2">
-              <ExternalLink size={16} /> Connect with Stripe
-            </Button>
-            <p className="text-xs text-gray-400">
-              Using Stripe test mode — no real money involved. Use test card 4242 4242 4242 4242.
-            </p>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   )

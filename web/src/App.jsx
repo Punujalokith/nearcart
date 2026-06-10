@@ -8,6 +8,7 @@ import Register     from './pages/Auth/Register'
 import Dashboard    from './pages/Dashboard/index'
 import ProductList  from './pages/Products/ProductList'
 import OrderList    from './pages/Orders/OrderList'
+import Analytics    from './pages/Analytics/index'
 import Settings     from './pages/Settings/index'
 import StoreProfile from './pages/Settings/StoreProfile'
 import PayoutSetup  from './pages/Settings/PayoutSetup'
@@ -25,10 +26,11 @@ export default function App() {
           <Route path="/register" element={<Register />} />
 
           <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard"          element={<Dashboard />} />
-            <Route path="/dashboard/products" element={<ProductList />} />
-            <Route path="/dashboard/orders"   element={<OrderList />} />
-            <Route path="/dashboard/settings" element={<Settings />}>
+            <Route path="/dashboard"           element={<Dashboard />} />
+            <Route path="/dashboard/products"  element={<ProductList />} />
+            <Route path="/dashboard/orders"    element={<OrderList />} />
+            <Route path="/dashboard/analytics" element={<Analytics />} />
+            <Route path="/dashboard/settings"  element={<Settings />}>
               <Route index          element={<StoreProfile />} />
               <Route path="payouts" element={<PayoutSetup />} />
             </Route>
@@ -37,7 +39,13 @@ export default function App() {
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
-      <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: { borderRadius: '12px', fontSize: '14px' },
+        }}
+      />
     </QueryClientProvider>
   )
 }

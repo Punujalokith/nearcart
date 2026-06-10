@@ -13,23 +13,46 @@ class CartScreen extends ConsumerWidget {
     final total = ref.read(cartNotifierProvider.notifier).total;
 
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: const Text('My Cart'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('My Cart', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            if (items.isNotEmpty)
+              Text('${items.length} item${items.length > 1 ? 's' : ''}',
+                  style: const TextStyle(fontSize: 12, color: AppTheme.textSub)),
+          ],
+        ),
         actions: [
           if (items.isNotEmpty)
             TextButton(
               onPressed: () => ref.read(cartNotifierProvider.notifier).clear(),
-              child: const Text('Clear', style: TextStyle(color: AppTheme.error)),
+              child: const Text('Clear all', style: TextStyle(color: AppTheme.error, fontSize: 13)),
             ),
         ],
       ),
       body: items.isEmpty
-          ? const Center(child: Column(
+          ? Center(child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.shopping_cart_outlined, size: 80, color: AppTheme.textSub),
-                SizedBox(height: 16),
-                Text('Your cart is empty', style: TextStyle(color: AppTheme.textSub, fontSize: 16)),
+                Container(
+                  width: 90, height: 90,
+                  decoration: const BoxDecoration(color: Color(0xFFF1F5F9), shape: BoxShape.circle),
+                  child: const Icon(Icons.shopping_cart_outlined, size: 40, color: AppTheme.textSub),
+                ),
+                const SizedBox(height: 16),
+                const Text('Your cart is empty', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppTheme.textMain)),
+                const SizedBox(height: 6),
+                const Text('Add items from nearby stores', style: TextStyle(fontSize: 13, color: AppTheme.textSub)),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: 160,
+                  child: ElevatedButton(
+                    onPressed: () => context.go('/home'),
+                    child: const Text('Browse Stores'),
+                  ),
+                ),
               ],
             ))
           : Column(
@@ -41,63 +64,128 @@ class CartScreen extends ConsumerWidget {
                     separatorBuilder: (_, __) => const SizedBox(height: 12),
                     itemBuilder: (_, i) {
                       final item = items[i];
-                      return Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
+                      return Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppTheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppTheme.border),
+                        ),
+                        child: Row(children: [
+                          // Image
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: SizedBox(
+                              width: 70, height: 70,
                               child: item.imageUrl != null
-                                  ? Image.network(item.imageUrl!, width: 64, height: 64, fit: BoxFit.cover)
-                                  : Container(width: 64, height: 64, color: AppTheme.border,
-                                      child: const Icon(Icons.image_outlined)),
+                                  ? Image.network(item.imageUrl!, fit: BoxFit.cover)
+                                  : Container(
+                                      color: const Color(0xFFF1F5F9),
+                                      child: const Icon(Icons.image_outlined, color: AppTheme.textSub),
+                                    ),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(child: Column(
+                          ),
+                          const SizedBox(width: 14),
+                          // Details
+                          Expanded(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontWeight: FontWeight.w600)),
+                                Text(
+                                  item.name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                ),
                                 const SizedBox(height: 4),
-                                Text('RM ${item.price.toStringAsFixed(2)}',
-                                    style: const TextStyle(color: AppTheme.primary)),
+                                Text(
+                                  item.vendorName,
+                                  style: const TextStyle(fontSize: 11, color: AppTheme.textSub),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'RM ${item.price.toStringAsFixed(2)}',
+                                      style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w700, fontSize: 14),
+                                    ),
+                                    // Qty controls
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.background,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(color: AppTheme.border),
+                                      ),
+                                      child: Row(children: [
+                                        _QtyBtn(
+                                          icon: Icons.remove,
+                                          onTap: () => ref.read(cartNotifierProvider.notifier)
+                                              .updateQuantity(item.productId, item.quantity - 1),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                                          child: Text('${item.quantity}',
+                                              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                                        ),
+                                        _QtyBtn(
+                                          icon: Icons.add,
+                                          onTap: () => ref.read(cartNotifierProvider.notifier)
+                                              .updateQuantity(item.productId, item.quantity + 1),
+                                        ),
+                                      ]),
+                                    ),
+                                  ],
+                                ),
                               ],
-                            )),
-                            Row(children: [
-                              _QtyBtn(icon: Icons.remove, onTap: () =>
-                                  ref.read(cartNotifierProvider.notifier).updateQuantity(item.productId, item.quantity - 1)),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              _QtyBtn(icon: Icons.add, onTap: () =>
-                                  ref.read(cartNotifierProvider.notifier).updateQuantity(item.productId, item.quantity + 1)),
-                            ]),
-                          ]),
-                        ),
+                            ),
+                          ),
+                        ]),
                       );
                     },
                   ),
                 ),
+
+                // ── Bottom summary ────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                    color: AppTheme.surface,
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 16, offset: const Offset(0, -4))],
                   ),
-                  child: Column(children: [
-                    Row(children: [
-                      const Text('Total', style: TextStyle(fontSize: 16)),
-                      const Spacer(),
-                      Text('RM ${total.toStringAsFixed(2)}',
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.primary)),
-                    ]),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: () => context.push('/checkout'),
-                      child: const Text('Proceed to Checkout'),
-                    ),
-                  ]),
+                  child: Column(
+                    children: [
+                      // Promo code row
+                      Container(
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppTheme.background,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppTheme.border),
+                        ),
+                        child: Row(children: [
+                          const SizedBox(width: 14),
+                          const Icon(Icons.discount_outlined, size: 18, color: AppTheme.textSub),
+                          const SizedBox(width: 10),
+                          const Expanded(child: Text('Apply promo code', style: TextStyle(color: AppTheme.textSub, fontSize: 14))),
+                          const Icon(Icons.chevron_right, color: AppTheme.textSub, size: 18),
+                          const SizedBox(width: 10),
+                        ]),
+                      ),
+                      const SizedBox(height: 14),
+                      Row(children: [
+                        const Text('Order Total', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                        const Spacer(),
+                        Text('RM ${total.toStringAsFixed(2)}',
+                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppTheme.primary)),
+                      ]),
+                      const SizedBox(height: 14),
+                      ElevatedButton(
+                        onPressed: () => context.push('/checkout'),
+                        child: const Text('Proceed to Checkout'),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -112,10 +200,9 @@ class _QtyBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GestureDetector(
     onTap: onTap,
-    child: Container(
-      width: 28, height: 28,
-      decoration: BoxDecoration(border: Border.all(color: AppTheme.border), borderRadius: BorderRadius.circular(6)),
-      child: Icon(icon, size: 14),
+    child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: Icon(icon, size: 16, color: AppTheme.primary),
     ),
   );
 }

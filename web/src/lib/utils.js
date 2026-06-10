@@ -1,5 +1,5 @@
 export function formatCurrency(amount) {
-  return `RM ${Number(amount).toFixed(2)}`
+  return `RM ${Number(amount || 0).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
 export function formatDate(dateStr) {
@@ -16,13 +16,23 @@ export function formatDateTime(dateStr) {
 }
 
 export const ORDER_STATUS_COLORS = {
-  PENDING:          'bg-yellow-100 text-yellow-800',
-  CONFIRMED:        'bg-blue-100 text-blue-800',
-  PREPARING:        'bg-purple-100 text-purple-800',
-  OUT_FOR_DELIVERY: 'bg-orange-100 text-orange-800',
-  DELIVERED:        'bg-green-100 text-green-800',
-  CANCELLED:        'bg-red-100 text-red-800',
-  REFUNDED:         'bg-gray-100 text-gray-800',
+  PENDING:          'bg-amber-100 text-amber-700',
+  CONFIRMED:        'bg-blue-100 text-blue-700',
+  PREPARING:        'bg-purple-100 text-purple-700',
+  OUT_FOR_DELIVERY: 'bg-orange-100 text-orange-700',
+  DELIVERED:        'bg-primary-100 text-primary-700',
+  CANCELLED:        'bg-red-100 text-red-700',
+  REFUNDED:         'bg-gray-100 text-gray-600',
+}
+
+export const ORDER_STATUS_DOT = {
+  PENDING:          'bg-amber-400',
+  CONFIRMED:        'bg-blue-400',
+  PREPARING:        'bg-purple-400',
+  OUT_FOR_DELIVERY: 'bg-orange-400',
+  DELIVERED:        'bg-primary-500',
+  CANCELLED:        'bg-red-400',
+  REFUNDED:         'bg-gray-400',
 }
 
 export const ORDER_NEXT_STATUS = {

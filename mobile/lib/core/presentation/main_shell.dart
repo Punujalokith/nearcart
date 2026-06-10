@@ -10,7 +10,7 @@ class MainShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final location = GoRouterState.of(context).matchedLocation;
+    final location  = GoRouterState.of(context).matchedLocation;
     final cartCount = ref.watch(cartNotifierProvider).fold(0, (sum, item) => sum + item.quantity);
 
     int currentIndex = 0;
@@ -20,31 +20,52 @@ class MainShell extends ConsumerWidget {
 
     return Scaffold(
       body: child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: currentIndex,
-        onDestinationSelected: (i) {
-          switch (i) {
-            case 0: context.go('/home');    break;
-            case 1: context.go('/search');  break;
-            case 2: context.go('/orders');  break;
-            case 3: context.go('/profile'); break;
-          }
-        },
-        destinations: [
-          const NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
-          const NavigationDestination(icon: Icon(Icons.search_outlined), selectedIcon: Icon(Icons.search), label: 'Search'),
-          const NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Orders'),
-          const NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
-        ],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: AppTheme.surface,
+          border: Border(top: BorderSide(color: AppTheme.border)),
+        ),
+        child: NavigationBar(
+          selectedIndex: currentIndex,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          height: 64,
+          animationDuration: const Duration(milliseconds: 250),
+          onDestinationSelected: (i) {
+            switch (i) {
+              case 0: context.go('/home');    break;
+              case 1: context.go('/search');  break;
+              case 2: context.go('/orders');  break;
+              case 3: context.go('/profile'); break;
+            }
+          },
+          destinations: [
+            _navDest(Icons.home_outlined,          Icons.home_rounded,      'Home'),
+            _navDest(Icons.search_outlined,         Icons.search_rounded,    'Search'),
+            _navDest(Icons.receipt_long_outlined,   Icons.receipt_long,      'Orders'),
+            _navDest(Icons.person_outline_rounded,  Icons.person_rounded,    'Profile'),
+          ],
+        ),
       ),
       floatingActionButton: cartCount > 0
           ? FloatingActionButton.extended(
               onPressed: () => context.push('/cart'),
-              backgroundColor: AppTheme.primary,
-              icon: const Icon(Icons.shopping_cart, color: Colors.white),
-              label: Text('Cart ($cartCount)', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              elevation:  4,
+              icon:  const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 20),
+              label: Text(
+                'Cart ($cartCount)',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13),
+              ),
             )
           : null,
+    );
+  }
+
+  NavigationDestination _navDest(IconData icon, IconData selectedIcon, String label) {
+    return NavigationDestination(
+      icon:         Icon(icon),
+      selectedIcon: Icon(selectedIcon),
+      label:        label,
     );
   }
 }
