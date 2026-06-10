@@ -50,11 +50,19 @@ app.use((req, res) => res.status(404).json({ error: 'Route not found' }));
 // Global error handler
 app.use(errorHandler);
 
-// Socket.io
-initSocket(server);
+// Socket.io (only in non-serverless environments)
+if (!process.env.VERCEL) {
+  initSocket(server);
+}
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`NearCart API running on http://localhost:${PORT}`);
-  console.log('Routes: auth | users | vendors | products | categories | orders | payments | reviews');
-});
+
+// Only start HTTP server when NOT on Vercel (Vercel handles it)
+if (!process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`NearCart API running on http://localhost:${PORT}`);
+    console.log('Routes: auth | users | vendors | products | categories | orders | payments | reviews');
+  });
+}
+
+export default app;
