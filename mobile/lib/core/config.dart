@@ -9,11 +9,9 @@ class AppConfig {
   static const String _devApi    = 'http://10.109.176.55:3000/api';
   static const String _devSocket = 'http://10.109.176.55:3000';
 
-  // ── Production (Railway) ──────────────────────────────────────────────────────
-  // Replace RAILWAY_URL with your actual Railway domain after deploying
-  // Example: nearcart-backend-production.up.railway.app
-  static const String _prodApi    = 'https://RAILWAY_URL/api';
-  static const String _prodSocket = 'https://RAILWAY_URL';
+  // ── Production (Vercel) ───────────────────────────────────────────────────────
+  static const String _prodApi    = 'https://nearcart-rho.vercel.app/api';
+  static const String _prodSocket = 'https://nearcart-rho.vercel.app';
 
   // ── Active config (auto-selected) ────────────────────────────────────────────
   static String get apiBaseUrl => _isDev ? _devApi    : _prodApi;
