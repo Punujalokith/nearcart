@@ -1,15 +1,15 @@
 export function formatCurrency(amount) {
-  return `RM ${Number(amount || 0).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  return `LKR ${Number(amount || 0).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
 export function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString('en-MY', {
+  return new Date(dateStr).toLocaleDateString('en-LK', {
     day: 'numeric', month: 'short', year: 'numeric',
   })
 }
 
 export function formatDateTime(dateStr) {
-  return new Date(dateStr).toLocaleString('en-MY', {
+  return new Date(dateStr).toLocaleString('en-LK', {
     day: 'numeric', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   })

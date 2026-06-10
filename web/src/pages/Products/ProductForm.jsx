@@ -73,7 +73,7 @@ export function ProductForm({ product, onSuccess }) {
       </Field>
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Price (RM)" error={errors.price?.message} required>
+        <Field label="Price (LKR)" error={errors.price?.message} required>
           <input {...register('price')} type="number" step="0.01" placeholder="0.00" className={inputCls} />
         </Field>
         <Field label="Stock Quantity" error={errors.stock?.message} required>

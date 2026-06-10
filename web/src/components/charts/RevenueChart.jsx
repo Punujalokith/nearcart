@@ -10,7 +10,7 @@ function CustomTooltip({ active, payload, label }) {
         {new Date(label).toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' })}
       </p>
       <p className="text-sm font-bold text-primary-600">
-        RM {Number(payload[0].value).toFixed(2)}
+        LKR {Number(payload[0].value).toFixed(2)}
       </p>
     </div>
   )
@@ -38,7 +38,7 @@ export function RevenueChart({ data = [] }) {
           tick={{ fontSize: 11, fill: '#9ca3af' }}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(v) => `RM${v}`}
+          tickFormatter={(v) => `LKR${v}`}
         />
         <Tooltip content={<CustomTooltip />} />
         <Area

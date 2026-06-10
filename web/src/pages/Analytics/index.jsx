@@ -153,7 +153,7 @@ export default function Analytics() {
                   tick={{ fontSize: 11, fill: '#9ca3af' }}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(v) => `RM${v}`}
+                  tickFormatter={(v) => `LKR${v}`}
                 />
                 <BarTooltip content={<CustomBarTooltip />} />
                 <Bar dataKey="revenue" fill="#16a34a" radius={[6, 6, 0, 0]} />
@@ -229,7 +229,7 @@ export default function Analytics() {
             { label: 'Pending Orders',      value: data?.pendingOrders ?? 0,                    badge: 'bg-amber-50 text-amber-700' },
             { label: 'Total Orders',        value: data?.totalOrders ?? 0,                      badge: 'bg-gray-50 text-gray-700' },
             { label: 'Active Products',     value: data?.productCount ?? 0,                     badge: 'bg-purple-50 text-purple-700' },
-            { label: 'Avg. Order Value',    value: data?.totalOrders ? formatCurrency((data?.totalRevenue ?? 0) / data.totalOrders) : 'RM 0.00', badge: 'bg-primary-50 text-primary-700' },
+            { label: 'Avg. Order Value',    value: data?.totalOrders ? formatCurrency((data?.totalRevenue ?? 0) / data.totalOrders) : 'LKR 0.00', badge: 'bg-primary-50 text-primary-700' },
           ].map(({ label, value, badge }) => (
             <div key={label} className={`rounded-xl p-4 ${badge}`}>
               <p className="text-xs font-medium opacity-70 mb-1">{label}</p>

@@ -91,9 +91,9 @@ export default function Login() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 relative z-10">
           {[
-            { value: '12K+', label: 'Active Vendors' },
-            { value: '98%',  label: 'Satisfaction Rate' },
-            { value: 'RM 4.2M', label: 'Monthly Sales' },
+            { value: '8K+',       label: 'Active Vendors' },
+            { value: '98%',       label: 'Satisfaction Rate' },
+            { value: 'LKR 42M',   label: 'Monthly Sales' },
           ].map(({ value, label }) => (
             <div key={label} className="text-center">
               <p className="text-white font-extrabold text-2xl">{value}</p>
